@@ -56,6 +56,7 @@ const handleSubmit = async () => {
     >
       <img
         src="./assets/farm_picture.jpg"
+        alt="Foto de una granja"
         class="object-cover w-full h-96 rounded-t-lg md:h-auto md:w-72 hidden md:block md:rounded-none md:rounded-l-lg"
       />
       <form
@@ -66,7 +67,7 @@ const handleSubmit = async () => {
           <h5 class="text-xl font-medium text-gray-900 dark:text-white">
             Inicia Sesión
           </h5>
-          <img src="./assets/evergreen.png" class="pl-8" />
+          <img src="./assets/evergreen.png" alt="Logo Evergreen" class="pl-8" />
         </div>
         <div>
           <label
@@ -134,7 +135,7 @@ const handleSubmit = async () => {
         </div>
         <button
           type="submit"
-          class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+          class="w-full focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
           :disabled="isSubmitting"
         >
           <loading-spinner v-if="isSubmitting" />
