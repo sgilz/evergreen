@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import useVuelidate from '@vuelidate/core';
 import LoadingSpinner from './components/LoadingSpinner.vue';
+import Toast from './components/Toast.vue';
 import { required, email } from '@vuelidate/validators';
 import { ref } from 'vue';
 import ky from 'ky';
@@ -11,6 +12,7 @@ const form = ref({
 });
 const showPassword = ref(false);
 const isSubmitting = ref(false);
+const isError = ref(false);
 
 const rules: any = {
   email: { required, email },
@@ -20,22 +22,35 @@ const rules: any = {
 const v$ = useVuelidate(rules, form);
 
 const handleSubmit = async () => {
-  isSubmitting.value = true;
-  if (!(await v$.value.$validate())) return;
-  const res = await ky
-    .post((import.meta.env['VITE_API_URL'] as string) + '/login', {
-      headers: {
-        Authorization:
-          'Basic ' + btoa(form.value.email + ':' + form.value.password),
-      },
-    })
-    .json();
-  isSubmitting.value = false;
+  try {
+    isSubmitting.value = true;
+    isError.value = false;
+    if (!(await v$.value.$validate())) return;
+    const res = await ky
+      .post((import.meta.env['VITE_API_URL'] as string) + '/login', {
+        headers: {
+          Authorization:
+            'Basic ' + btoa(form.value.email + ':' + form.value.password),
+        },
+      })
+      .json();
+  } catch (error) {
+    isError.value = true;
+  } finally {
+    isSubmitting.value = false;
+  }
 };
 </script>
 
 <template>
-  <div class="pt-24">
+  <div class="relative pt-24">
+    <transition name="toast">
+      <toast
+        v-if="isError"
+        message="Ocurrió un error, inténtalo de nuevo."
+        @toast-close="isError = false"
+      />
+    </transition>
     <div
       class="flex mx-auto max-w-4xl bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700"
     >
@@ -129,3 +144,15 @@ const handleSubmit = async () => {
     </div>
   </div>
 </template>
+
+<style scoped>
+.toast-enter-active,
+.toast-leave-active {
+  transition: opacity 0.25s ease;
+}
+
+.toast-enter-from,
+.toast-leave-to {
+  opacity: 0;
+}
+</style>
