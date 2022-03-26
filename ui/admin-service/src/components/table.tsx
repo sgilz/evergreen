@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPenToSquare, faTrashCan } from '@fortawesome/free-regular-svg-icons';
 import DeleteModal from './DeleteModal';
 import ky from 'ky';
+import { Link } from 'react-router-dom';
 
 type User = {
   id: number;
@@ -25,11 +26,15 @@ const Table: FunctionalComponent = () => {
       if (localStorage.getItem('token')) {
         setLoading(true);
         setError(false);
-        const res: { users: User[] } = await ky.get(`${(import.meta.env['VITE_API_URL'] as string)}/users`, {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token') as string}`
-          }
-        }).json();
+        const res: { users: User[] } = await ky
+          .get(`${import.meta.env['VITE_API_URL'] as string}/users`, {
+            headers: {
+              Authorization: `Bearer ${
+                localStorage.getItem('token') as string
+              }`,
+            },
+          })
+          .json();
         setUsers(res.users);
         setLoading(false);
       }
@@ -43,45 +48,48 @@ const Table: FunctionalComponent = () => {
 
   useEffect(() => {
     fetchUsers();
-  }, [])
+  }, []);
 
   const close = () => {
     setUsername('');
-  }
+  };
 
   const deleteUser = async () => {
     try {
-      await ky.delete(`${(import.meta.env['VITE_API_URL'] as string)}/users/delete`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token') as string}`
-        },
-        json: {
-          username
+      await ky.delete(
+        `${import.meta.env['VITE_API_URL'] as string}/users/delete`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token') as string}`,
+          },
+          json: {
+            username,
+          },
         }
-      });
+      );
       await fetchUsers();
       setUsername('');
     } catch (error) {
       setUsername('');
     }
-  }
+  };
 
   return (
-    <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
-      <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+    <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
+      <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+        <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
           <tr>
-            <th scope="col" class="px-6 py-3">
+            <th scope="col" className="px-6 py-3">
               Usuario
             </th>
-            <th scope="col" class="px-6 py-3">
+            <th scope="col" className="px-6 py-3">
               Nombre
             </th>
-            <th scope="col" class="px-6 py-3">
+            <th scope="col" className="px-6 py-3">
               Rol
             </th>
-            <th scope="col" class="px-6 py-3">
-              <span class="sr-only">Editar</span>
+            <th scope="col" className="px-6 py-3">
+              <span className="sr-only">Editar</span>
             </th>
           </tr>
         </thead>
@@ -93,7 +101,7 @@ const Table: FunctionalComponent = () => {
                   <i className="block py-4 text-center">
                     <svg
                       role="status"
-                      className="inline mr-2 w''0 h''0 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
+                      className="inline mr-2 w-10 h-10 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
                       viewBox="0 0 100 101"
                       fill="none"
                       xmlns="http://www.w3.org/2000/svg"
@@ -121,29 +129,32 @@ const Table: FunctionalComponent = () => {
             users.map((user) => (
               <tr
                 key={`user-${user.id}`}
-                class="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
+                className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
               >
                 <th
                   scope="row"
-                  class="px-6 py-4 font-medium text-gray-900 dark:text-white whitespace-nowrap"
+                  className="px-6 py-4 font-medium text-gray-900 dark:text-white whitespace-nowrap"
                 >
                   {user.username}
                 </th>
-                <td class="px-6 py-4">
+                <td className="px-6 py-4">
                   {user.first_name + ' ' + user.last_name}
                 </td>
-                <td class="px-6 py-4">{user.role}</td>
-                <td class="px-6 py-4 text-right">
-                  <a
-                    href="#"
-                    class="px-2 font-medium text-green-500 dark:text-green-400 hover:underline"
+                <td className="px-6 py-4">{user.role}</td>
+                <td className="px-6 py-4 text-right">
+                  <Link
+                    to={`/assign-role?username=${user.username}`}
+                    className="px-2 font-medium text-green-500 dark:text-green-400 hover:underline cursor-pointer"
                   >
                     <FontAwesomeIcon icon={faPenToSquare} className="mr-2" />
-                    Editar
-                  </a>
+                    Asignar rol
+                  </Link>
                   <a
-                    class="px-2 font-medium text-red-600 dark:text-red-500 hover:underline cursor-pointer"
-                    onClick={() => { setUsername(user.username) }}
+                    href="#"
+                    className="px-2 font-medium text-red-600 dark:text-red-500 hover:underline cursor-pointer"
+                    onClick={() => {
+                      setUsername(user.username);
+                    }}
                   >
                     <FontAwesomeIcon icon={faTrashCan} className="mr-2" />
                     Eliminar
@@ -154,7 +165,11 @@ const Table: FunctionalComponent = () => {
           )}
         </tbody>
       </table>
-      {username !== '' ? <DeleteModal close={close} deleteUser={deleteUser} /> : <></>}
+      {username !== '' ? (
+        <DeleteModal close={close} deleteUser={deleteUser} />
+      ) : (
+        <></>
+      )}
     </div>
   );
 };

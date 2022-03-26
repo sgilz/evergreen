@@ -1,35 +1,56 @@
 import { FunctionalComponent } from 'preact';
+import { Link } from 'react-router-dom';
 
 const Navbar: FunctionalComponent = () => {
-
   const signOut = () => {
     if (localStorage.getItem('token')) {
       localStorage.removeItem('token');
     }
-    window.location.href = `${(import.meta.env['VITE_LOGIN_APP'] as string)}?origin=signout`;
-  }
+    window.location.href = `${
+      import.meta.env['VITE_LOGIN_APP'] as string
+    }?origin=signout`;
+  };
 
   return (
-    <nav class="bg-white border-gray-200 px-2 sm:px-4 py-2.5 rounded dark:bg-gray-800">
-      <div class="container flex flex-wrap justify-between items-center mx-auto">
-        <a href="https://flowbite.com" class="flex items-center">
+    <nav className="bg-white border-gray-200 px-2 sm:px-4 py-2.5 rounded dark:bg-gray-800">
+      <div className="container flex flex-wrap justify-between items-center mx-auto">
+        <a href="https://flowbite.com" className="flex items-center">
           <img
             src="/src/assets/evergreen.png"
-            class="mr-3 h-6 sm:h-9"
+            className="mr-3 h-6 sm:h-9"
             alt="Logo Evergreen"
           />
         </a>
         <div id="mobile-menu">
-          <ul class="flex flex-col mt-4 md:flex-row md:space-x-8 md:mt-0 md:text-sm md:font-medium">
+          <ul className="flex flex-col mt-4 md:flex-row md:space-x-8 md:mt-0 md:text-sm md:font-medium">
             <li>
-              <span class="block py-2 pr-4 pl-3 rounded md:bg-transparent text-blue-700 p-0 dark:text-white">
-                Administrador
-              </span>
+              <Link
+                to="/"
+                className="block py-2 pr-4 pl-3 rounded md:bg-transparent text-blue-700 p-0 dark:text-white"
+              >
+                Gestionar usuarios
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/create-role"
+                className="block py-2 pr-4 pl-3 rounded md:bg-transparent text-blue-700 p-0 dark:text-white"
+              >
+                Crear role
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/create-user"
+                className="block py-2 pr-4 pl-3 rounded md:bg-transparent text-blue-700 p-0 dark:text-white"
+              >
+                Crear usuario
+              </Link>
             </li>
             <li>
               <button
                 type="button"
-                class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+                className="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
                 onClick={signOut}
               >
                 Cerrar sesión
