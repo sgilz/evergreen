@@ -1,41 +1,38 @@
 import { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faListAlt, faTrashCan } from '@fortawesome/free-regular-svg-icons';
+import { faTrashCan } from '@fortawesome/free-regular-svg-icons';
 import DeleteModal from './DeleteModal';
 import ky from 'ky';
-import { Link } from 'react-router-dom';
 
-type AgroChain = {
-  id: number;
-  name: string;
-  register_time: number;
-};
-
-const Table: React.FC = () => {
-  const [agroChain, setAgroChain] = useState<AgroChain[]>([]);
+const StagesTable: React.FC<{ chain: string }> = ({ chain }) => {
+  const [stages, setStages] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
-  const [agroName, setAgroName] = useState('');
+  const [stageId, setStageId] = useState(-1);
 
-  async function fetchAgroChains() {
+  async function fetchStages() {
     try {
       if (localStorage.getItem('token')) {
         setLoading(true);
         setError(false);
-        const res: { farm_chains: AgroChain[] } = await ky
-          .get(`${import.meta.env['VITE_API_URL'] as string}/farmchains`, {
+        const res: { stages: any[] } = await ky
+          .get(`${import.meta.env['VITE_API_URL'] as string}/stages`, {
             headers: {
               Authorization: `Bearer ${
                 localStorage.getItem('token') as string
               }`,
             },
+            searchParams: {
+              farm_chain_name: chain,
+            },
           })
           .json();
-        setAgroChain(res.farm_chains);
+        setStages(res.stages);
         setLoading(false);
       }
     } catch (error) {
-      setAgroChain([]);
+      console.error(error);
+      setStages([]);
       setError(true);
     } finally {
       setLoading(false);
@@ -43,30 +40,30 @@ const Table: React.FC = () => {
   }
 
   useEffect(() => {
-    fetchAgroChains();
+    fetchStages();
   }, []);
 
   const close = () => {
-    setAgroName('');
+    setStageId(-1);
   };
 
-  const deleteAgroChain = async () => {
+  const deleteStage = async () => {
     try {
       await ky.delete(
-        `${import.meta.env['VITE_API_URL'] as string}/farmchains/delete`,
+        `${import.meta.env['VITE_API_URL'] as string}/stages/delete`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token') as string}`,
           },
           json: {
-            name: agroName,
+            id: stageId,
           },
         }
       );
-      await fetchAgroChains();
-      setAgroName('');
+      await fetchStages();
+      setStageId(-1);
     } catch (error) {
-      setAgroName('');
+      setStageId(-1);
     }
   };
 
@@ -80,6 +77,9 @@ const Table: React.FC = () => {
             </th>
             <th scope="col" className="px-6 py-3">
               Nombre
+            </th>
+            <th scope="col" className="px-6 py-3">
+              Agrocadena
             </th>
             <th scope="col" className="px-6 py-3">
               <span className="sr-only">Editar</span>
@@ -119,31 +119,25 @@ const Table: React.FC = () => {
               </td>
             </tr>
           ) : (
-            agroChain.map((agro) => (
+            stages.map((stage) => (
               <tr
-                key={`agro-${agro.id}`}
+                key={`stage-${stage.id}`}
                 className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
               >
                 <th
                   scope="row"
                   className="px-6 py-4 font-medium text-gray-900 dark:text-white whitespace-nowrap"
                 >
-                  {agro.id}
+                  {stage.id}
                 </th>
-                <td className="px-6 py-4">{agro.name}</td>
+                <td className="px-6 py-4">{stage.name}</td>
+                <td className="px-6 py-4">{stage.idFarmingChain}</td>
                 <td className="px-6 py-4 text-right">
-                  <Link
-                    to={`/stages?chain=${agro.name}`}
-                    className="px-2 font-medium text-green-500 dark:text-green-400 hover:underline"
-                  >
-                    <FontAwesomeIcon icon={faListAlt} className="mr-2" />
-                    Ver etapas
-                  </Link>
                   <a
                     href="#"
                     className="px-2 font-medium text-red-600 dark:text-red-500 hover:underline cursor-pointer"
                     onClick={() => {
-                      setAgroName(agro.name);
+                      setStageId(stage.id);
                     }}
                   >
                     <FontAwesomeIcon icon={faTrashCan} className="mr-2" />
@@ -155,11 +149,11 @@ const Table: React.FC = () => {
           )}
         </tbody>
       </table>
-      {agroName !== '' ? (
+      {stageId !== -1 ? (
         <DeleteModal
           close={close}
-          deleteAgroChain={deleteAgroChain}
-          message="¿Estás seguro que deseas eliminar esta agrocadena?"
+          deleteAgroChain={deleteStage}
+          message="¿Estás seguro que deseas eliminar esta etapa?"
         />
       ) : (
         <></>
@@ -168,4 +162,4 @@ const Table: React.FC = () => {
   );
 };
 
-export default Table;
+export default StagesTable;

@@ -13,13 +13,13 @@ const Navbar: React.FC = () => {
   return (
     <nav className="bg-white border-gray-200 px-2 sm:px-4 py-2.5 rounded dark:bg-gray-800">
       <div className="container flex flex-wrap justify-between items-center mx-auto">
-        <a href="https://flowbite.com" className="flex items-center">
+        <Link to="/" className="flex items-center">
           <img
             src="/src/assets/evergreen.png"
             className="mr-3 h-6 sm:h-9"
             alt="Logo Evergreen"
           />
-        </a>
+        </Link>
         <div id="mobile-menu">
           <ul className="flex flex-col mt-4 md:flex-row md:space-x-8 md:mt-0 md:text-sm md:font-medium">
             <li>
