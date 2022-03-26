@@ -25,8 +25,7 @@ services:
   api:
     depends_on: 
       - db
-    build: .
-    image: sagudeloo/evergreen-backend:latest
+    image: sagudeloo/evergreen-backend:0.0.2
     restart: always
     environment:
       DB_USER: "admin"
@@ -36,6 +35,19 @@ services:
       DB_NAME: 'evergreen-db'
     ports:
       - "5000:5000"
+
+  login:
+    depends_on: 
+      - api
+      - db
+    image: sagudeloo/evergreen-login:0.0.1
+    restart: always
+    environment:
+      VITE_API_URL: http://api-evergreen.sagudeloo.com:5000
+      VITE_ADMIN_APP_URL: http://admin-evergreen.sagudeloo.com
+      VITE_GUEST_APP_URL: http://guest-evergreen.sagudeloo.com
+    ports:
+      - "3000:80"
 
 volumes:
   mariadb_data:
