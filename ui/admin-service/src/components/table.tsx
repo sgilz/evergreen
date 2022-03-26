@@ -1,5 +1,4 @@
-import { FunctionalComponent } from 'preact';
-import { useEffect, useState } from 'preact/hooks';
+import { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPenToSquare, faTrashCan } from '@fortawesome/free-regular-svg-icons';
 import DeleteModal from './DeleteModal';
@@ -15,7 +14,7 @@ type User = {
   register_time: number;
 };
 
-const Table: FunctionalComponent = () => {
+const Table: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);

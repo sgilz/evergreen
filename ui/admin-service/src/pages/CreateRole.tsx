@@ -1,9 +1,8 @@
 import ky from 'ky';
-import { FunctionalComponent } from 'preact';
-import { useEffect, useState } from 'preact/hooks';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
-const CreateRole: FunctionalComponent = () => {
+const CreateRole: React.FC = () => {
   const [show, setShow] = useState(false);
   const [role, setRole] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -24,11 +23,11 @@ const CreateRole: FunctionalComponent = () => {
           },
         }
       );
+      setIsSubmitting(false);
       navigate('/');
     } catch (error) {
-      navigate('/');
-    } finally {
       setIsSubmitting(false);
+      navigate('/');
     }
   }
 
@@ -47,10 +46,14 @@ const CreateRole: FunctionalComponent = () => {
       {show ? (
         <div className="flex-grow self-center pt-24">
           <div className="p-6 max-w-sm bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700">
-            <form onSubmit={createRole}>
+            <form
+              onSubmit={(e: any) => {
+                createRole(e);
+              }}
+            >
               <div className="mb-6 w-full">
                 <label
-                  for="role"
+                  htmlFor="role"
                   className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-400"
                 >
                   Nombra el nuevo role

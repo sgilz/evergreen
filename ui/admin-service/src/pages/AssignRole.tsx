@@ -1,9 +1,8 @@
 import ky from 'ky';
-import { FunctionalComponent } from 'preact';
-import { useEffect, useState } from 'preact/hooks';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
-const AssignRole: FunctionalComponent = () => {
+const AssignRole: React.FC = () => {
   const [show, setShow] = useState(false);
   const [roles, setRoles] = useState<any[]>([]);
   const [currentRole, setCurrentRole] = useState('');
@@ -60,10 +59,10 @@ const AssignRole: FunctionalComponent = () => {
     <>
       {show ? (
         <div className="flex-grow self-center pt-24">
-          <form onSubmit={assignRole}>
+          <form onSubmit={(e: any) => assignRole(e)}>
             <div className="mb-6 w-full">
               <label
-                for="roles"
+                htmlFor="roles"
                 className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-400"
               >
                 Selecciona un rol
@@ -77,8 +76,10 @@ const AssignRole: FunctionalComponent = () => {
                 value={currentRole}
                 required
               >
-                {roles.map((role) => (
-                  <option value={role.name}>{role.name}</option>
+                {roles.map((role, i) => (
+                  <option key={`role-${i}`} value={role.name}>
+                    {role.name}
+                  </option>
                 ))}
               </select>
             </div>

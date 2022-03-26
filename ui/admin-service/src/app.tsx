@@ -5,7 +5,7 @@ import AssignRole from './pages/AssignRole';
 import CreateRole from './pages/CreateRole';
 import CreateUser from './pages/CreateUser';
 
-export function App() {
+function App() {
   if (!localStorage.getItem('theme')) localStorage.setItem('theme', 'dark');
 
   return (
@@ -22,3 +22,5 @@ export function App() {
     </div>
   );
 }
+
+export default App;

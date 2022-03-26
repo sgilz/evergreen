@@ -1,7 +1,6 @@
-import { FunctionalComponent } from 'preact';
 import { Link } from 'react-router-dom';
 
-const Navbar: FunctionalComponent = () => {
+const Navbar: React.FC = () => {
   const signOut = () => {
     if (localStorage.getItem('token')) {
       localStorage.removeItem('token');

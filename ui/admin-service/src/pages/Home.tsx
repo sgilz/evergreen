@@ -1,8 +1,7 @@
-import { FunctionalComponent } from 'preact';
-import { useEffect, useState } from 'preact/hooks';
+import { useEffect, useState } from 'react';
 import Table from '../components/table';
 
-const Home: FunctionalComponent = () => {
+const Home: React.FC = () => {
   const [show, setShow] = useState(false);
   const queryString = window.location.search;
   const query = new URLSearchParams(queryString);

@@ -1,11 +1,10 @@
 import { faEye, faEyeSlash } from '@fortawesome/free-regular-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ky from 'ky';
-import { FunctionalComponent } from 'preact';
-import { useEffect, useState } from 'preact/hooks';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
-const CreateUser: FunctionalComponent = () => {
+const CreateUser: React.FC = () => {
   const [show, setShow] = useState(false);
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -50,10 +49,14 @@ const CreateUser: FunctionalComponent = () => {
       {show ? (
         <div className="flex-grow self-center pt-24">
           <div className="p-6 max-w-sm bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700">
-            <form onSubmit={createUser}>
+            <form
+              onSubmit={(e: any) => {
+                createUser(e);
+              }}
+            >
               <div className="mb-6 w-full">
                 <label
-                  for="first-name"
+                  htmlFor="first-name"
                   className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-400"
                 >
                   Nombre
@@ -71,7 +74,7 @@ const CreateUser: FunctionalComponent = () => {
               </div>
               <div className="mb-6 w-full">
                 <label
-                  for="last-name"
+                  htmlFor="last-name"
                   className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-400"
                 >
                   Apellido
@@ -89,7 +92,7 @@ const CreateUser: FunctionalComponent = () => {
               </div>
               <div className="mb-6 w-full">
                 <label
-                  for="username"
+                  htmlFor="username"
                   className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-400"
                 >
                   Nombre de usuario
@@ -116,7 +119,7 @@ const CreateUser: FunctionalComponent = () => {
               </div>
               <div className="mb-6 w-full">
                 <label
-                  for="password"
+                  htmlFor="password"
                   className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-400"
                 >
                   Contraseña
