@@ -37,9 +37,9 @@ spec:
       - name: evergreen-admin-ui
         env:
           - name: VITE_API_URL
-            value: http://api.evergreen.sagudeloo.com
+            value: http://api-evergreen.sagudeloo.com:5000
           - name: VITE_LOGIN_APP
-            value: http://login.evergreen.sagudeloo.com
+            value: http://evergreen.sagudeloo.com/login
         image: "sagudeloo/evergreen-admin-ui:0.0.1"
         imagePullPolicy: Always
         resources:
