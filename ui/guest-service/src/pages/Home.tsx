@@ -1,8 +1,7 @@
-import { FunctionalComponent } from 'preact';
-import { useEffect, useState } from 'preact/hooks';
+import { useEffect, useState } from 'react';
 import Table from '../components/table';
 
-const Home: FunctionalComponent = () => {
+const Home: React.FC = () => {
   const [show, setShow] = useState(false);
   const queryString = window.location.search;
   const query = new URLSearchParams(queryString);
@@ -31,7 +30,7 @@ const Home: FunctionalComponent = () => {
       {show ? (
         <div className="flex-grow self-center pt-24">
           <p className="text-3xl dark:text-white pb-4 mb-6 border-b-2 border-green-400 rounded-b">
-            Gestión de usuarios
+            Gestión de agrocadenas
           </p>
           <Table />
         </div>
