@@ -21,6 +21,21 @@ services:
       PMA_HOST: db
     ports:
       - "81:80"
+  
+  api:
+    depends_on: 
+      - db
+    build: .
+    image: sgilz/evergreen-api:latest
+    restart: always
+    environment:
+      DB_USER: "admin"
+      DB_PASS: "LTg8B7BAxIemx7l2LNm1"
+      DB_URI: db
+      DB_PORT: '3306' 
+      DB_NAME: 'evergreen-db'
+    ports:
+      - "5000:5000"
 
 volumes:
   mariadb_data:
