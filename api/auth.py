@@ -1,13 +1,27 @@
-from email.policy import default
 from flask import Blueprint, request, jsonify, make_response
 from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
-from .models import Users, Roles
+from . import Users, Roles
 from . import app
 import jwt
 import datetime
 
 auth_app = Blueprint('auth', __name__)
+
+@app.cli.command("seed")
+def seed():
+    default_roles = ["admin", "guest"]
+    for v in default_roles:
+        role = Roles.query.filter_by(name=v).first()
+        if not role:
+            Roles(name=v).save()
+    admin = Users.query.filter_by(username="admin").first()
+    if not admin:
+        Users(first_name="admin", 
+            last_name="admin", 
+            role="admin", 
+            username="admin", 
+            password=generate_password_hash("admin", method='sha256')).save()
 
 def token_required(f):
     @wraps(f)
@@ -26,22 +40,6 @@ def token_required(f):
             return make_response(jsonify({'message': 'token is invalid'}), 401, {'WWW-Authenticate': 'Bearer realm: "login required"'})   
         return f(current_user, *args,  **kwargs)  
     return decorator 
-
-def db_init(*args):
-    default_roles = ["admin", "guest"]
-    for v in default_roles:
-        role = Roles.query.filter_by(name=v).first()
-        if not role:
-            Roles(name=v).save()
-    admin = Users.query.filter_by(username="admin").first()
-    if not admin:
-        Users(first_name="admin", 
-            last_name="admin", 
-            role="admin", 
-            username="admin", 
-            password=generate_password_hash("admin", method='sha256')).save()
-
-@app.before_first_request(db_init)
 
 @auth_app.route('/login', methods=['POST'])  
 def login_user(): 
