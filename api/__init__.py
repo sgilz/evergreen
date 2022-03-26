@@ -73,7 +73,7 @@ class FarmingChains(db.Model, BaseModel):
 
 class Stages(db.Model, BaseModel):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(20), unique=True)
+    name = db.Column(db.String(20), unique=False)
     idFarmingChain = db.Column(db.Integer, db.ForeignKey("farmingchains.id"), nullable=False)
     register_time = db.Column(db.TIMESTAMP(timezone=True), server_default=db.func.now(), nullable=False)
 
@@ -117,6 +117,9 @@ class Members(db.Model, BaseModel):
 
 from .auth import auth_app as auth_blueprint
 app.register_blueprint(auth_blueprint)
+
+from .farm_chain import fc_app as fc_blueprint
+app.register_blueprint(fc_blueprint)
 
 if __name__ == "__main__":
     app.run(debug=True)
