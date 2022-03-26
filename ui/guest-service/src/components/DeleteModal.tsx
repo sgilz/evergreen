@@ -1,11 +1,13 @@
 type DeleteModalProps = {
   close: Function;
   deleteAgroChain: Function;
+  message: string;
 };
 
 const DeleteModal: React.FC<DeleteModalProps> = ({
   close,
   deleteAgroChain,
+  message,
 }) => {
   return (
     <div
@@ -32,16 +34,16 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
                 xmlns="http://www.w3.org/2000/svg"
               >
                 <path
-                  fill-rule="evenodd"
+                  fillRule="evenodd"
                   d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                  clip-rule="evenodd"
+                  clipRule="evenodd"
                 ></path>
               </svg>
             </button>
           </div>
           <div className="p-6 space-y-6">
             <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
-              ¿Estás seguro que deseas eliminar esta agrocadena?
+              {message}
             </p>
           </div>
           <div className="flex justify-end items-center p-6 space-x-2 rounded-b border-t border-gray-200 dark:border-gray-600">

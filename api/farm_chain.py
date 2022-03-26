@@ -45,10 +45,10 @@ def create_stage(current_user):
 @fc_app.route('/stages', methods=['GET'])
 @token_required
 def get_stages(current_user):
-    data = request.get_json()
-    fc = FarmingChains.query.filter_by(name=data["farm_chain_name"]).first()
+    data = request.args.get('farm_chain_name')
+    fc = FarmingChains.query.filter_by(name=data).first()
     if not fc:
-        return make_response(jsonify({"message": f'Farm chain "{data["farm_chain_name"]}" does not exist'}), 400)
+        return make_response(jsonify({"message": f'Farm chain "{data}" does not exist'}), 400)
     fc_stages = Stages.query.filter_by(idFarmingChain=fc.id).all()
     return jsonify({'stages': [s.serialize() for s in fc_stages]})
 
