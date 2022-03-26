@@ -1,6 +1,14 @@
 import { FunctionalComponent } from 'preact';
 
 const Navbar: FunctionalComponent = () => {
+
+  const signOut = () => {
+    if (localStorage.getItem('token')) {
+      localStorage.removeItem('token');
+    }
+    window.location.href = `${(import.meta.env['VITE_LOGIN_APP'] as string)}?origin=signout`;
+  }
+
   return (
     <nav class="bg-white border-gray-200 px-2 sm:px-4 py-2.5 rounded dark:bg-gray-800">
       <div class="container flex flex-wrap justify-between items-center mx-auto">
@@ -22,6 +30,7 @@ const Navbar: FunctionalComponent = () => {
               <button
                 type="button"
                 class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+                onClick={signOut}
               >
                 Cerrar sesión
               </button>

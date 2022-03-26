@@ -2,12 +2,24 @@
 import useVuelidate from '@vuelidate/core';
 import LoadingSpinner from './components/LoadingSpinner.vue';
 import Toast from './components/Toast.vue';
-import { required, email } from '@vuelidate/validators';
-import { ref } from 'vue';
+import { required } from '@vuelidate/validators';
+import { onMounted, ref } from 'vue';
 import ky from 'ky';
 
+const queryString = window.location.search;
+const query = new URLSearchParams(queryString);
+
+onMounted(() => {
+  if (query.get('origin') && query.get('origin') === 'signout') {
+    localStorage.removeItem('token')
+  }
+  if (localStorage.getItem('token')) {
+    window.location.href = `${(import.meta.env['VITE_ADMIN_APP_URL'] as string)}?token=${localStorage.getItem('token') as string}`
+  }
+})
+
 const form = ref({
-  email: '',
+  username: '',
   password: '',
 });
 const showPassword = ref(false);
@@ -15,7 +27,7 @@ const isSubmitting = ref(false);
 const isError = ref(false);
 
 const rules: any = {
-  email: { required, email },
+  username: { required },
   password: { required },
 };
 
@@ -26,14 +38,17 @@ const handleSubmit = async () => {
     isSubmitting.value = true;
     isError.value = false;
     if (!(await v$.value.$validate())) return;
-    const res = await ky
+    const res: { token: string } = await ky
       .post((import.meta.env['VITE_API_URL'] as string) + '/login', {
         headers: {
           Authorization:
-            'Basic ' + btoa(form.value.email + ':' + form.value.password),
+            'Basic ' + btoa(form.value.username + ':' + form.value.password),
         },
       })
       .json();
+    const { token } = res
+    localStorage.setItem('token', token)
+    window.location.href = `${(import.meta.env['VITE_ADMIN_APP_URL'] as string)}?token=${token}`
   } catch (error) {
     isError.value = true;
   } finally {
@@ -59,47 +74,41 @@ const handleSubmit = async () => {
         alt="Foto de una granja"
         class="object-cover w-full h-96 rounded-t-lg md:h-auto md:w-72 hidden md:block md:rounded-none md:rounded-l-lg"
       />
-      <form
-        class="space-y-6 px-6 py-12 flex-grow"
-        @submit.prevent="handleSubmit"
-      >
+      <form class="space-y-6 px-6 py-12 flex-grow" @submit.prevent="handleSubmit">
         <div class="flex justify-evenly items-center divide-x">
-          <h5 class="text-xl font-medium text-gray-900 dark:text-white">
-            Inicia Sesión
-          </h5>
+          <h5 class="text-xl font-medium text-gray-900 dark:text-white">Inicia Sesión</h5>
           <img src="./assets/evergreen.png" alt="Logo Evergreen" class="pl-8" />
         </div>
         <div>
           <label
-            for="email"
+            for="username"
             class="block text-sm font-medium text-gray-900 dark:text-gray-300"
-            >Correo electrónico</label
-          >
+          >Usuario</label>
           <input
-            v-model="form.email"
-            type="email"
-            name="email"
-            id="email"
+            v-model="form.username"
+            type="text"
+            name="username"
+            id="username"
             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
             :class="
-              v$.email.$error
+              v$.username.$error
                 ? 'focus:ring-red-500 focus:border-red-500'
                 : 'focus:ring-blue-500 focus:border-blue-500'
             "
-            placeholder="nombre@evergreen.com"
+            placeholder="evergreen"
             required
-            @blur="v$.email.$touch()"
+            @blur="v$.username.$touch()"
           />
-          <span class="text-sm" :class="v$.email.$error ? 'text-red-500' : ''">
-            {{ v$.email.$dirty ? (v$.email as any).required.$invalid ? 'El correo electrónico es requerido' : (v$.email as any).email.$invalid ? 'El correo electrónico no es válido' : '&nbsp;' : '&nbsp;' }}</span
-          >
+          <span
+            class="text-sm"
+            :class="v$.username.$error ? 'text-red-500' : ''"
+          >{{ v$.username.$dirty ? (v$.username as any).required.$invalid ? 'El usuario es requerido' : '&nbsp;' : '&nbsp;' }}</span>
         </div>
         <div>
           <label
             for="password"
             class="block text-sm font-medium text-gray-900 dark:text-gray-300"
-            >Contraseña</label
-          >
+          >Contraseña</label>
           <div class="relative">
             <input
               v-model="form.password"
@@ -116,10 +125,7 @@ const handleSubmit = async () => {
               required
               @blur="v$.password.$touch()"
             />
-            <button
-              class="absolute right-2 top-2 z-10"
-              @click="showPassword = !showPassword"
-            >
+            <button class="absolute right-2 top-2 z-10" @click="showPassword = !showPassword">
               <font-awesome-icon
                 :icon="showPassword ? ['far', 'eye'] : ['far', 'eye-slash']"
                 color="white"
@@ -129,9 +135,7 @@ const handleSubmit = async () => {
           <span
             class="text-sm"
             :class="v$.password.$error ? 'text-red-500' : ''"
-          >
-            {{ v$.password.$dirty ? (v$.password as any).required.$invalid ? 'La contraseña es requerida' : '&nbsp;' : '&nbsp;' }}
-          </span>
+          >{{ v$.password.$dirty ? (v$.password as any).required.$invalid ? 'La contraseña es requerida' : '&nbsp;' : '&nbsp;' }}</span>
         </div>
         <button
           type="submit"

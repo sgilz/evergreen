@@ -1,8 +1,9 @@
 import { FunctionalComponent } from 'preact';
 import { useEffect, useState } from 'preact/hooks';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import ky from 'ky';
 import { faPenToSquare, faTrashCan } from '@fortawesome/free-regular-svg-icons';
+import DeleteModal from './DeleteModal';
+import ky from 'ky';
 
 type User = {
   id: number;
@@ -17,26 +18,23 @@ const Table: FunctionalComponent = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
+  const [username, setUsername] = useState('');
 
-  async function getUsers() {
+  async function fetchUsers() {
     try {
-      setLoading(true);
-      setError(false);
-      // const res = await ky
-      //   .get((import.meta.env['VITE_API_URL'] as string) + '/users')
-      //   .json();
-      setUsers([
-        {
-          id: 1,
-          username: 'srendonn',
-          first_name: 'Sebastian',
-          last_name: 'Rendon',
-          role: 'Invitado',
-          register_time: Date.now(),
-        },
-      ]);
-      setLoading(false);
+      if (localStorage.getItem('token')) {
+        setLoading(true);
+        setError(false);
+        const res: { users: User[] } = await ky.get(`${(import.meta.env['VITE_API_URL'] as string)}/users`, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token') as string}`
+          }
+        }).json();
+        setUsers(res.users);
+        setLoading(false);
+      }
     } catch (error) {
+      setUsers([]);
       setError(true);
     } finally {
       setLoading(false);
@@ -44,8 +42,29 @@ const Table: FunctionalComponent = () => {
   }
 
   useEffect(() => {
-    getUsers();
-  }, []);
+    fetchUsers();
+  }, [])
+
+  const close = () => {
+    setUsername('');
+  }
+
+  const deleteUser = async () => {
+    try {
+      await ky.delete(`${(import.meta.env['VITE_API_URL'] as string)}/users/delete`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token') as string}`
+        },
+        json: {
+          username
+        }
+      });
+      await fetchUsers();
+      setUsername('');
+    } catch (error) {
+      setUsername('');
+    }
+  }
 
   return (
     <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
@@ -74,7 +93,7 @@ const Table: FunctionalComponent = () => {
                   <i className="block py-4 text-center">
                     <svg
                       role="status"
-                      className="inline mr-2 w-10 h-10 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
+                      className="inline mr-2 w''0 h''0 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
                       viewBox="0 0 100 101"
                       fill="none"
                       xmlns="http://www.w3.org/2000/svg"
@@ -123,8 +142,8 @@ const Table: FunctionalComponent = () => {
                     Editar
                   </a>
                   <a
-                    href="#"
-                    class="px-2 font-medium text-red-600 dark:text-red-500 hover:underline"
+                    class="px-2 font-medium text-red-600 dark:text-red-500 hover:underline cursor-pointer"
+                    onClick={() => { setUsername(user.username) }}
                   >
                     <FontAwesomeIcon icon={faTrashCan} className="mr-2" />
                     Eliminar
@@ -135,6 +154,7 @@ const Table: FunctionalComponent = () => {
           )}
         </tbody>
       </table>
+      {username !== '' ? <DeleteModal close={close} deleteUser={deleteUser} /> : <></>}
     </div>
   );
 };

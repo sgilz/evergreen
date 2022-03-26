@@ -13,7 +13,8 @@
     "@fortawesome/react-fontawesome": "^0.1.18",
     "flowbite": "^1.4.1",
     "ky": "^0.30.0",
-    "preact": "^10.5.15"
+    "preact": "^10.5.15",
+    "react-router-dom": "^6.2.2"
   },
   "devDependencies": {
     "@preact/preset-vite": "^2.1.5",
